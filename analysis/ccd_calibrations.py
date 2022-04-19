@@ -57,9 +57,9 @@ def bias_combine(biaslist, output="../ccd_calibrations/BIAS.fits", Trim=True, Si
         input list of strings with paths to individual raw bias fits images, e.g., ['bias.001.fits','bias.002.fits','bias.003.fits']
     output: str, optional
         Name of the master bias image to write. (Default is "BIAS.fits")
-    trim : bool, optional
+    Trim : bool, optional
         Trim the image using the DATASEC keyword or info for KOSMOS
-    silent : bool, optional
+    Silent : bool, optional
         If False, print details about the biascombine. (Default is True)
 
     Returns
@@ -83,14 +83,14 @@ def bias_combine(biaslist, output="../ccd_calibrations/BIAS.fits", Trim=True, Si
 
         if Trim is False:
             im_i = hdu_i[0].data
-        if Trim is True:
+        else:  # if Trim is True
             im_i = ccd_trim(hdu_i, silent=Silent)
 
         # create image stack
         if i == 0:
             all_data = im_i
             header0 = hdu_i[0].header
-        elif i > 0:
+        else:  # elif i > 0:
             all_data = np.dstack((all_data, im_i))
         hdu_i.close(closed=True)
 
@@ -231,7 +231,7 @@ def FlatCombine(flatlist, inputbias, output='../ccd_calibrations/FLAT.fits', Tri
 
     Parameters
     ----------
-    flatlist : str
+    flatlist : list[str]
         list of strings, filenames for each flat to combine
     inputbias : str or 2-d array
         Either the path to the master bias image (str) or
@@ -466,3 +466,17 @@ blist = ["../apo_files/bias.0002.fits", "../apo_files/bias.0003.fits", "../apo_f
 biasname = "../ccd_calibrations/MasterBias.fits"
 
 biasM = bias_combine(blist, output=biasname, Trim=True, Silent=False)
+
+flatlist = ['../apo_files/Flat.0043.fits', '../apo_files/Flat.0044.fits', '../apo_files/Flat.0045.fits']
+
+flatname = "../ccd_calibrations/MasterFlat.fits"  ## do this independently for DIS Red and DIS Blue (change names) -- you need separate master biases for each CCD, with different saved files
+
+# be careful about these filenames as the default mode is to overwrite a file with the same name
+# inputbias should point to the bias file we used before (make sure you use the proper ones for DIS red/blue)
+
+
+## --- Fill in SpAxis with 1 for columns as the spatial axis, and 0 for rows as the spatial axis --- KOSMOS and DIS are different
+
+
+FlatM, illumindex, badpix = FlatCombine(flatlist, biasname, output=flatname, SpAxis=1,
+                                        Trim=True, Silent=True, Display=False, mode='spline')
