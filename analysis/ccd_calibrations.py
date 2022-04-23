@@ -480,3 +480,38 @@ flatname = "../ccd_calibrations/MasterFlat.fits"  ## do this independently for D
 
 FlatM, illumindex, badpix = FlatCombine(flatlist, biasname, output=flatname, SpAxis=1,
                                         Trim=True, Silent=True, Display=False, mode='spline')
+
+# process images with master bias and flat
+
+comp_lamp_files = ['../apo_files/lamps.0033.fits', '../apo_files/Lamps.0046.fits']
+comp_lamp_out_names = ['../ccd_calibrations/comp_1.fits', '../ccd_calibrations/comp_2.fits']
+flat_file = "../ccd_calibrations/MasterFlat.fits"
+bias_file = "../ccd_calibrations/MasterBias.fits"
+
+for inFile, outFile in zip(comp_lamp_files, comp_lamp_out_names):
+    # out = ((in - masterbias) / masterflat) * gain
+
+    # read in the lamp image
+    lamp = pyf.open(inFile)
+    lamp_data = lamp[0].data[:, 0:2048]
+
+    # read in the master flat
+    flat = pyf.open(flat_file)
+    flat_data = flat[0].data
+
+    # read in the master bias
+    bias = pyf.open(bias_file)
+    bias_data = bias[0].data
+
+    # subtract the master bias
+    lamp_data = lamp_data - bias_data
+
+    # divide by the master flat
+    lamp_data = lamp_data / flat_data
+
+    # multiply by the gain
+    gain = 0.6  # e-/ADU
+    lamp_data = lamp_data * gain
+
+    # write the output file
+    pyf.writeto(outFile, lamp_data, lamp[0].header)
