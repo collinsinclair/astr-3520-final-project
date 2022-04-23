@@ -399,7 +399,7 @@ def FlatCombine(flatlist, inputbias, output='../ccd_calibrations/FLAT.fits', Tri
     return flat, ok[0], badpix
 
 
-image = pyf.open("../apo_files/bias.0002.fits")
+image = pyf.open("../apo_files/0002.bias.fits")
 bias_l = image[0].data[0:4072, 0:1023]
 bias_r = image[0].data[0:4072, 1024:2048]
 overscan_l = image[0].data[0:4072, 2048:2100]
@@ -460,14 +460,14 @@ axH.set_ylabel("Histogram Counts")
 axH.legend()
 plt.savefig("../plots/data-vs-overscan.png", dpi=300)
 
-blist = ["../apo_files/bias.0002.fits", "../apo_files/bias.0003.fits", "../apo_files/bias.0004.fits",
-         "../apo_files/bias.0005.fits", "../apo_files/bias.0006.fits"]
+blist = ["../apo_files/0002.bias.fits", "../apo_files/0003.bias.fits", "../apo_files/0004.bias.fits",
+         "../apo_files/0005.bias.fits", "../apo_files/0006.bias.fits"]
 
 biasname = "../ccd_calibrations/MasterBias.fits"
 
 biasM = bias_combine(blist, output=biasname, Trim=True, Silent=False)
 
-flatlist = ['../apo_files/Flat.0043.fits', '../apo_files/Flat.0044.fits', '../apo_files/Flat.0045.fits']
+flatlist = ['../apo_files/0043.Flat.fits', '../apo_files/0044.Flat.fits', '../apo_files/0045.Flat.fits']
 
 flatname = "../ccd_calibrations/MasterFlat.fits"  ## do this independently for DIS Red and DIS Blue (change names) -- you need separate master biases for each CCD, with different saved files
 
@@ -483,7 +483,7 @@ FlatM, illumindex, badpix = FlatCombine(flatlist, biasname, output=flatname, SpA
 
 # process images with master bias and flat
 
-comp_lamp_files = ['../apo_files/lamps.0033.fits', '../apo_files/Lamps.0046.fits']
+comp_lamp_files = ['../apo_files/0033.lamps.fits', '../apo_files/0046.Lamps.fits']
 comp_lamp_out_names = ['../ccd_calibrations/comp_1.fits', '../ccd_calibrations/comp_2.fits']
 flat_file = "../ccd_calibrations/MasterFlat.fits"
 bias_file = "../ccd_calibrations/MasterBias.fits"
