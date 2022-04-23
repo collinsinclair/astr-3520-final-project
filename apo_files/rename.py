@@ -9,6 +9,11 @@ def rename(files):
     for f in files:
         if f.endswith('.fits'):
             fname = f.split('.')
-            if len(fname) == 3:
-                newname = fname[1] + '.' + fname[2] + '.' + fname[0] + '.fits'
+            if len(fname) == 3 and fname[2] == 'fits':
+                newname = fname[1] + '.' + fname[0] + '.fits'
                 os.rename(f, newname)
+
+
+if __name__ == '__main__':
+    files = os.listdir()
+    rename(files)
