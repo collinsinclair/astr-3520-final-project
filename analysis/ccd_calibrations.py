@@ -514,4 +514,4 @@ for inFile, outFile in zip(comp_lamp_files, comp_lamp_out_names):
     lamp_data = lamp_data * gain
 
     # write the output file
-    pyf.writeto(outFile, lamp_data, lamp[0].header)
+    pyf.writeto(outFile, lamp_data, lamp[0].header, overwrite=True)
