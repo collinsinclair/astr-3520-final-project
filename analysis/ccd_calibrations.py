@@ -515,3 +515,35 @@ for inFile, outFile in zip(comp_lamp_files, comp_lamp_out_names):
 
     # write the output file
     pyf.writeto(outFile, lamp_data, lamp[0].header, overwrite=True)
+
+bd_flux = ['../apo_files/0040.BDFlux.fits', '../apo_files/0041.BDFlux.fits', '../apo_files/0042.BDFlux.fits']
+bd_flux_out = ['../ccd_calibrations/bd_flux_1.fits', '../ccd_calibrations/bd_flux_2.fits',
+               '../ccd_calibrations/bd_flux_3.fits']
+
+for inFile, outFile in zip(bd_flux, bd_flux_out):
+    # out = ((in - masterbias) / masterflat) * gain
+
+    # read in the lamp image
+    lamp = pyf.open(inFile)
+    lamp_data = lamp[0].data[:, 0:2048]
+
+    # read in the master flat
+    flat = pyf.open(flat_file)
+    flat_data = flat[0].data
+
+    # read in the master bias
+    bias = pyf.open(bias_file)
+    bias_data = bias[0].data
+
+    # subtract the master bias
+    lamp_data = lamp_data - bias_data
+
+    # divide by the master flat
+    lamp_data = lamp_data / flat_data
+
+    # multiply by the gain
+    gain = 0.6  # e-/ADU
+    lamp_data = lamp_data * gain
+
+    # write the output file
+    pyf.writeto(outFile, lamp_data, lamp[0].header, overwrite=True)
