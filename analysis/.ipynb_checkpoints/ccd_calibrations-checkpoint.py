@@ -525,32 +525,25 @@ for inFile, outFile in zip(bd_flux, bd_flux_out):
 
     # read in the lamp image
     lamp = pyf.open(inFile)
-    lamp_data = lamp[0].data[:, 300:1600]
-    print("min bd_flux = ", np.min(lamp_data))
+    lamp_data = lamp[0].data[:, 0:2048]
 
     # read in the master flat
     flat = pyf.open(flat_file)
-    flat_data = flat[0].data[:, 300:1600]
-    print("min flat = ", np.min(flat_data))
+    flat_data = flat[0].data
 
     # read in the master bias
     bias = pyf.open(bias_file)
-    # bias_data = bias[0].data[:, 300:1600]
-    bias_data = np.min(lamp_data) * np.ones(lamp_data.shape)
-    print("min bias = ", np.min(bias_data))
+    bias_data = bias[0].data
 
     # subtract the master bias
     lamp_data = lamp_data - bias_data
-    print("min bd_flux - bias = ", np.min(lamp_data))
 
     # divide by the master flat
     lamp_data = lamp_data / flat_data
-    print("min bd_flux / flat = ", np.min(lamp_data))
 
     # multiply by the gain
     gain = 0.6  # e-/ADU
     lamp_data = lamp_data * gain
-    print("min bd_flux * gain = ", np.min(lamp_data))
 
     # write the output file
     pyf.writeto(outFile, lamp_data, lamp[0].header, overwrite=True)
