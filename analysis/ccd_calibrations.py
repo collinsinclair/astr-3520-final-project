@@ -554,3 +554,40 @@ for inFile, outFile in zip(bd_flux, bd_flux_out):
 
     # write the output file
     pyf.writeto(outFile, lamp_data, lamp[0].header, overwrite=True)
+
+science_images = ['../apo_files/0032.SUAur.fits', '../apo_files/0036.DRTau.fits', '../apo_files/0039.RWAur.fits']
+science_out = ['../ccd_calibrations/suaur.fits', '../ccd_calibrations/drtau.fits', '../ccd_calibrations/rwaur.fits']
+for inFile, outFile in zip(science_images, science_out):
+    # out = ((in - masterbias) / masterflat) * gain
+
+    # read in the lamp image
+    lamp = pyf.open(inFile)
+    lamp_data = lamp[0].data[:, 300:1600]
+    print("min bd_flux = ", np.min(lamp_data))
+
+    # read in the master flat
+    flat = pyf.open(flat_file)
+    flat_data = flat[0].data[:, 300:1600]
+    print("min flat = ", np.min(flat_data))
+
+    # read in the master bias
+    bias = pyf.open(bias_file)
+    # bias_data = bias[0].data[:, 300:1600]
+    bias_data = np.min(lamp_data) * np.ones(lamp_data.shape)
+    print("min bias = ", np.min(bias_data))
+
+    # subtract the master bias
+    lamp_data = lamp_data - bias_data
+    print("min bd_flux - bias = ", np.min(lamp_data))
+
+    # divide by the master flat
+    lamp_data = lamp_data / flat_data
+    print("min bd_flux / flat = ", np.min(lamp_data))
+
+    # multiply by the gain
+    gain = 0.6  # e-/ADU
+    lamp_data = lamp_data * gain
+    print("min bd_flux * gain = ", np.min(lamp_data))
+
+    # write the output file
+    pyf.writeto(outFile, lamp_data, lamp[0].header, overwrite=True)
